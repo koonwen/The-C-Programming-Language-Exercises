@@ -5,7 +5,7 @@
 
 int main()
 {
-  char c, t, b, bs;
+  int c, t, b, bs;
   t = '\t';
   b = '\b';
   bs = '\\';

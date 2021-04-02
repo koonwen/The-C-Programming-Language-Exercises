@@ -5,7 +5,8 @@
 
 int main()
 {
-  printf("The value of EOF is %d\n", EOF);
+  printf("The value of EOF is %d\n", EOF); // Notice that you cannot use %c because it is not big enough to hold EOF
+  printf("Trying to use %%c we get %c\n", EOF);
 
   return 0;
 }
