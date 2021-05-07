@@ -8,18 +8,7 @@
 
 int main()
 {
-  unsigned char a;
-  signed char as;
   
-  unsigned short b;
-  signed short bs;
-  
-  unsigned int c;
-  signed int cs;
-  
-  unsigned long d;
-  signed long ds;
-
   printf("signed char number of bits: %.f, range: %d - %d\n", log2(UCHAR_MAX+1), CHAR_MIN, CHAR_MAX);
   printf("signed short number of bits %.f, range: %d - %d\n", log2(USHRT_MAX+1), SHRT_MIN, SHRT_MAX);
   printf("signed int number of bits %.f, range: %d - %d\n", log2(UINT_MAX), INT_MIN, INT_MAX);
