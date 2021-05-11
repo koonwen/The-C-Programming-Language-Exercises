@@ -3,3 +3,4 @@ A Repo containing my exercise solutions for "The C Programming Language" - by Br
 
 You will find that this Repo is structured according the chapters in the book:
  - Chapter 1
+ - Chapter 2
