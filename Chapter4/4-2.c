@@ -20,7 +20,7 @@ int main() {
     return 0;
 }
 
-/* extedned atof: convert string s to double including scientific notation */
+/* extended atof: convert string s to double including scientific notation */
 double atof(char s[])
 {
     double val, power;
