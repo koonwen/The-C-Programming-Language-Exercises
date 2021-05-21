@@ -5,6 +5,16 @@
   numbers.
 */
 
+// Exercise 4-4
+/* Add commands to print the top element of the stack without popping,
+   to duplicate it, and to swap the top elements. Add a command to
+   clear the stack.
+*/
+
+// Exercises 4-5
+/* Add access to library functions like sin, exp and pow. See <math.h>
+   in Appendix B, Section 4 */
+
 #include <stdio.h>
 #include <stdlib.h>       /* for atof() */
 #include <math.h>     /* for sin(x), exp(x) and pow(x, y) functions */
@@ -156,7 +166,8 @@ void swap(void)
   push(s2);
 }
 
-/* clears everything from the stack.. acutally just changes the stack pointer */
+/* clears everything from the stack.. acutally just changes the stack
+   pointer */
 void clearstk(void)
 {
   sp = 0;
