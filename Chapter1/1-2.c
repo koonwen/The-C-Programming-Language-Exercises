@@ -1,6 +1,5 @@
 //Exercise 1-2
-/*
-What happens when \c is used when c is not {n,t,b,\,",}
+/* What happens when \c is used when c is not {n,t,b,\,",}
 \n : newline
 \t : tab
 \b : backspace

@@ -1,5 +1,5 @@
 //Exercise 1-1
-//Hello World Program.
+/* Hello World Program. */
 
 #include <stdio.h>
 

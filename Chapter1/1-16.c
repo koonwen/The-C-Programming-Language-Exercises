@@ -1,5 +1,7 @@
 //Exercise 1-16
-//Revise the main routine of the longest-line program so it will correctly print the length of the arbitrarily long input lines, and as much as possible of the text.
+/* Revise the main routine of the longest-line program so it will
+   correctly print the length of the arbitrarily long input lines, and
+   as much as possible of the text. */
 
 #include <stdio.h>
 #define MAXLINE 1000    /* maximum input line size */

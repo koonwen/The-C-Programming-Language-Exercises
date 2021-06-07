@@ -1,5 +1,6 @@
 //Exercise 1-11
-//How would you test the word count program? What kinds of input are the most likely to uncover bugs if there are any?
+/* How would you test the word count program? What kinds of input are
+   the most likely to uncover bugs if there are any? */
 
 
 //Word count program given in the book
