@@ -1,22 +1,12 @@
-// Exercise 6-6
-/* Implement a simple version of the #define processor (i.e., no
-   arguments) suitable for use with C programs, based on the routes
-   of this section. You may also find getch and ungetch helpful */
-
-/* Minimally working copy. However does not differentiate from #define
-   in comments */
+// Exercise 6-5
+/* Write a function undef that will remove a name and definition from
+   the table maintained by lookup and install. */
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <ctype.h>
 
 #define HASHSIZE 101
-#define MAXWORD 100
-
-int getword(void);
-int process_word(void);
-int process_macro(void);
 
 struct nlist {			/* table entry */
   struct nlist *next;		/* pointer to next entry */
@@ -34,86 +24,16 @@ void print_tab(void);
 
 int main()
 {
-  int c;
-  while ((c = getword()) != EOF) {
-    if (c == '#') {
-      putchar(c);
-      process_macro();
-    }
-    else
-      process_word();
-  }
+  install("hello", "world");
+  install("this", "is");
+  install("a", "test");
+  install("hello", "replace");
+  print_tab();
+  undef("hello");
   print_tab();
   return 0;
 }
 
-/* =====================IO FUNCTIONS========================= */
-static char s[MAXWORD];
-/* getword: reads in words and prints out whatever was read in */
-int getword()
-{
-  int lim = MAXWORD-1;
-  int c;
-  char *w = s;
-
-  while (isspace(c = getchar()))
-    putchar(c);
-  if (c == '\n')
-    return c;
-  if (c != EOF)
-    *w++ = c;
-  if (!isalnum(c)) {
-    *w = '\0';
-    return c;
-  }
-  for ( ; --lim > 0; w++)
-    if (!isalnum(*w = getchar())) {
-      ungetc(*w, stdin);
-      break;
-    }
-  *w = '\0';
-  return w[0];
-}
-
-/* process_macro: get macro */
-int process_macro(void)
-{
-  int c;
-  static char name[MAXWORD];
-  static char defn[MAXWORD];
-  c = getword();
-  if (strcmp(s, "define") != 0) {
-    fputs(s, stdout);
-    return c;
-  }
-  fputs(s, stdout);
-  
-  c = getword();
-  fputs(s, stdout);
-  strcpy(name, s);
-  
-  c = getword();
-  fputs(s, stdout);
-  strcpy(defn, s);
-  
-  install(name, defn);
-
-  return c;
-} 
-
-/* process_line: print line while replacing macros */
-int process_word(void)
-{
-  int c;
-  struct nlist *p;
-  if ((p = lookup(s)) != NULL)
-      fputs(p->defn, stdout);
-    else
-      fputs(s, stdout);
-  return c;
-}
-
-/* =====================HASH FUNCTIONS========================= */
 /* hash: form hash value for string */
 unsigned hash(char *s)
 {
