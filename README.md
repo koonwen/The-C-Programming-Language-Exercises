@@ -101,14 +101,16 @@ int getchar(void)
     - a pointer to the next position in the buffer
     - file descriptor
     - flags describing the read/write mode and error status
-So we see that libraries are just an interface for easier programming for interacting with IO and implement syscalls. On the other hand syscalls are the interface to the IO themselves. In general, within libraries functions are defined with underscores _iobuf to minimize conflict with user program names. Both `getc` and `fopen` require the function `_filbuf` which creates and fills the buffer if no buffer has been allocated or `_flushbuf` if it is full and needs to be reinitialized
-
+So we see that libraries are just an interface for easier programming for interacting with IO and implement syscalls. On the other hand syscalls are the interface to the IO themselves. In general, within libraries functions are defined with underscores _iobuf to minimize conflict with user program names. Both `getc` and `fopen` require the function `_filbuf` which creates and fills the buffer if no buffer has been allocated or `_flushbuf` if it is full and needs to be reinitialized.
+6. **Example - Listing Directories** - Sometimes we just want information about the file, not its contents. There are system calls for that. First to provide an overview of the UNIX filesystem structure. A directory is a file that contains a list of filenames and some indication of where they are located. The "location" is an index into another table called an inode list. The inode of a file is where all information about the file except its name is found. In short, the directory's file data is a table of the filenames it's holding and their inode number. The inode number is resolved with the inode list. Following that inode holds all data about that file except it's name. Following a directory file is also the same.  [`fsize` program that has similar functionality to `ls` bash command - whilst the `fsize` is system dependent, with a little tweaks, the program can be modified to work on local machines as long as we are able to see the underlying data structures used to represent directories and files.]
 
 
 # Additional Notes
 
 **Unix File descriptors vs Standard lib File pointers**
-
+- Firstly, it is important to note that system calls are an interface that allow programs to access and use hardware resources. The standard library functions are somewhat made for programmer ease of usability and therefore most of the time are wrappers for system calls.
+- For handling files. The lowest entry point for C programs to access hardware is through system calls. The system call `open` returns a file descriptor to the file requested. The standard library provides the function `fopen` which essentially does the same thing except it returns a pointer to an internally defined stucture for representing files (`FILE *`).
+- The `FILE` structure contains information about the file descriptor and, permissions and buffer. Probably the biggest difference from the file descriptor and `FILE` is the information stored in `FILE` is buffered whilst reading from the file descriptor will require a system call every time.
 
 **Macro expansion vs Function calls**
 - Macro expansion is generally prefered when you have a small routine instead of writing a function call. The reason for this is that extra resources are used when a function call is made such as copying values because of the pass by value property of arguments.
