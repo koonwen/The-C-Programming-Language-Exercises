@@ -23,18 +23,19 @@ You will find that this Repo is structured according the chapters in the book:
 - Character arrays (Strings) and `'\0'` terminator value
 
 ## Chapter 2 (Types, Operators, and Expressions):
-- Variable naming conventions (lowercase for variable names and upper case for symbolic constants)
-- Data types and sizes __(Read notes)__
-- Constants long constants have terminal `L` and unsigned constants have terminal `U`. enum constant
-- Declarations must be done before use! Declaration != Definition. Initializers must be static. An explicitly initialized variable is initialized everytime the function/block is entered. `external/static` is initializes as zero.
-- Arithmetic operators: associate left to right
-- Relational and Logical operators: Relational have less precedence than arithmetic operators. Expressions connected by logical operators evaluate left to right
-- Type conversions __(Read notes)__
-- Increment and Decrement Operators, postfix/prefix ++/--
-- Bitwise operators ~, &, |, ^, <<, >>, -`
-- Assignment Operators and Expressions
-- Conditional Expressions
-- Order of Evaluation
+Summary: The basic building blocks of programs require types, operators and expressions. Types are used to define the what data object can be stored in a variable and what operations are legal. Operators specify what is to be done on variables and expressions combine variables and operators to create new values.
+1. **Variable names** - lowercase for variable names and upper case for symbolic constants. underscores _ can be used to separated naming but should not be used to prefix names because it is generally reserved for internal functions/variables.
+2. **Data types and sizes** - datatypes = {char, int, float, double}, qualifiers = {short, long, signed, unsigned}. More than anything, the type defines the size of memory address space that determines a range of values the type can represent. _(Read additional notes "Data types, Word sizes, Bits and Bytes")_
+3. **Constants** - Constants are hard coded values just like string constants. long constants have terminal `L` and unsigned constants have terminal `U`. A ocatal constant has a leading 0(zero) and hexadecimal constant has a leading 0x. Similarly we have character constants which are represented between single aprostrophes. '0' is the int 48 and is unrelated to the numeric value 0. The null character '\0', the representation of 0 as a character constant. enumerations constants are just a faster way of defining constants without having to physcially defining everything.
+4. **Declarations** - Specifies a list of variables/functions and their associated types that will be used in the program. Must be done before use of variables/functions! Declaration != Definition _(Read additional notes "Declaration vs definition?")_. Initializers must be static. An explicitly initialized variable is initialized everytime the function/block is entered. `external/static` is initializes as zero. A qualifier `const` will throw an error if the program attempts to change the value.
+5. **Arithmetic operators**: include {+,-,/,*,%} associate left to right. Integer division truncates fractional part and modulus cannot be applied to float or double. 
+6. **Relational and Logical operators** - relational include { <, <=, >, >= } AND equality operators { ==, != } however the former has higher precedence than the latter. Arithmetic operators have higher precedence over relational operators. Logical operators include {&&, ||}. Expressions connected by logical operators also evaluate left to right and stop as soon as truth or falsehood is determined. Arithmetic and relational operators have higher precendence over logical operators and && is higher than ||. unary ! negation operator can also come in useful at times.
+7. **Type conversions** - when an operator encounters with operands with different types. Type conversion can occer where the general rule is that narrow types are converted to match the wider type. _(Read notes " Type Conversions")_
+8. **Increment and Decrement Operators** - prefix/postfix { ++/-- } operate on variables incrementing or decrementing before/after the expression is evaluated.
+9. **Bitwise operators** - inlclude { &, |, ^, <<, >>, ~ }
+10. **Assignment Operators and Expressions** - in most progrmaming languages the `=` is the assignment operator instead of equality. Most binary operators including { +, -, *, /, %, <<, >>, &, ^, | } can be combined with the assignment operator to shorten code.
+11. **Conditional Expressions** - These are typically `if else` statements, however we can also shorten it to be more succinct if appropriate using a ternary " expr ? expr : expr" statement
+- **Precedence and Order of Evaluation** - The table of order of evaluation can be found in the book pg 53. A useful quote to keep in mind taken from the book says "Writing code that depends on order of evaluation is a bad programming practive in any language". The rationale being that this can make code readability cryptic and debugging a pain.
 
 ## Chapter 3 (Control Flow)
 > To be done
@@ -91,7 +92,9 @@ int getchar(void)
 
     return (read(0, &c, 1) == 1) ? (unsigned char) c : EOF)
 }
-// Notice how read returns an int but we expect a char. Since EOF is -1, to prevent sign extension (system automatically promoting char to an int) we explicitly cast it to an unsigned char.
+// Notice how read returns an int but we expect a char. 
+Since EOF is -1, to prevent sign extension (system 
+automatically promoting char to an int) we explicitly cast it to an unsigned char.
 ```
 3. **Open, Creat, Close, Unlink** - Just as mentioned when we want to read and write to files, we first have to open them. The `open` syscall is similar to fopen but instead of returning a file pointer, it returns the file descriptor or -1 if an error occured. `creat` will create a new file or rewrite old ones and set permissions specified by the perms parameter argument. There are 9 bits of permissions usr,group,others `rwxrwxrwx`. Therefore it is convenient to use an octal number to represent this. This octal number is referred to as mode. There is about a mximum of 20 file descriptors that a process is allocated. Therefore you cannot have many opened files together. Using the `close` function will break the connection between the file descriptor and the opened file to be reused for another file. The syscall `unlink(char *name)` removes the file name from the file system and corresponds to the standard library function remove. It seems like in mac OSX, syscalls are hidden from the user C programs use the standard library that builds on syscalls to do similar functionality. [Implement `cat` with system calls instead of stdio libraries]
 4. **Random Access - Lseek** - Usually when read or write to a file, it happens sequentially. However, it is possible to move around a file with lseek syscall. `long lseek(int fd, long offset, int origin)` allows us to treat a file like an array. The standard libary function fseek is similar to lseek except the first argument is a `FILE *`
@@ -102,10 +105,16 @@ int getchar(void)
     - file descriptor
     - flags describing the read/write mode and error status
 So we see that libraries are just an interface for easier programming for interacting with IO and implement syscalls. On the other hand syscalls are the interface to the IO themselves. In general, within libraries functions are defined with underscores _iobuf to minimize conflict with user program names. Both `getc` and `fopen` require the function `_filbuf` which creates and fills the buffer if no buffer has been allocated or `_flushbuf` if it is full and needs to be reinitialized.
-6. **Example - Listing Directories** - Sometimes we just want information about the file, not its contents. There are system calls for that. First to provide an overview of the UNIX filesystem structure. A directory is a file that contains a list of filenames and some indication of where they are located. The "location" is an index into another table called an inode list. The inode of a file is where all information about the file except its name is found. In short, the directory's file data is a table of the filenames it's holding and their inode number. The inode number is resolved with the inode list. Following that inode holds all data about that file except it's name. Following a directory file is also the same.  [`fsize` program that has similar functionality to `ls` bash command - whilst the `fsize` is system dependent, with a little tweaks, the program can be modified to work on local machines as long as we are able to see the underlying data structures used to represent directories and files.]
+6. **Example - Listing Directories** - Sometimes we just want information about the file, not its contents. There are system calls for that. First to provide an overview of the UNIX filesystem structure. A directory is a file that contains a list of filenames and some indication of where they are located. The "location" is an index into another table called an inode list. The inode of a file is where all information about the file except its name is found. In short, the directory's file data is a table of the filenames it's holding and their inode number. The inode number is resolved with the inode list. Following that inode holds all data about that file except it's name. Following a directory file is also the same.  [`fsize` program that has similar functionality to `ls` bash command - whilst the `fsize` is system dependent, with a little tweaks, the program can be modified to work on local machines as long as we are able to see the underlying data structures used to represent directories and files.] Since the program structure is quite complex, this drawing tries to give a visual idea of what the program is doing ![fsize pictoral representation](Images/fsize_drawing.png)
+7. **Example - A Storage Allocator** - The previous implementation of memory allocation in Chapter 5 was a rudimentary stack with a static large array. This has 2 problems, firstly free must be called according to LIFO order. Secondly, reserving a large array in every program might not be resource savvy. The new implementation attempts to solve these problems by using a linked-list instead. Our implementation of the struct representing the linked-list node must allow us to maintain alignment of the storage returned (Read additional notes "What is memory alignment"). `malloc` maintains a free list which is not initialised until the first call is made. The properties of the free list is that each memory block address is ordered in ascending order to allow consistent pointer arithmetic. At the end of the list, the last node wraps around to point to the starting node. On the first call, `malloc` will initialize the free list to point to itself with a size of zero. Subsequently, it will iterate through the free list until an available block is found or it wraps around. If there are no available blocks, `morecore` is called which requests from the operating system to provide more memory. The `morecore` function must also insert the new memory block into the new list carefully by calling `free`. `free` iterates through the list to find the space where the memory block is relative to the free list so that it can be inserted properly in accordance to the properties of the free list.
 
 
 # Additional Notes
+
+**What is alignment?**
+- In C, we have very tight control over allocation in memory space. This is a good and bad thing. This means while we can implement programs that are resource efficient, we also must be very careful in our implementations to prevent accessing memory spaces we should not be accessing and in this case, make sure memory is aligned.
+- In particular, one issue that comes up often is memory alignment. CPU's typically require that (sometimes for performance reasons) data is stored at addresses that is some multiple of 2^n.
+- In Chapter 8.7. We tackle the problem of ensuring the memory alignment of memory blocks we get from the OS. To overcome this, we call memory blocks that are multiples of the linked list node that stores information about the memory block. On top of this, the linked list node is defined as a union with an instance of the most restrictive type (The largest data type). This ensures space returned by mallloc are aligned AND can hold any kind of data type.
 
 **Unix File descriptors vs Standard lib File pointers**
 - Firstly, it is important to note that system calls are an interface that allow programs to access and use hardware resources. The standard library functions are somewhat made for programmer ease of usability and therefore most of the time are wrappers for system calls.
@@ -123,18 +132,18 @@ So we see that libraries are just an interface for easier programming for intera
 - A buffer on the other hand, is a sequence of data stored in memory.
 - A stream can be put in a buffer for easier handling.
 
-**Function declaration vs definition**
+**Declaration vs definition?**
 - A declaration is merely telling the program what the function returns, and its argument types. A function is usually declared before being used in another function/program by a function protype. If a function protoype is not found. The functions return and argument types are implicitly declared by the first use in the program.
 - A definition is the entire function code itself including it's argument variable names and it's body.
 - A definition will reserve storage space for a function whereas a declaration decribes what the properties of a function are.
 
-**Data types:**
+**Data types, Word sizes, Bits and Bytes:**
 - A word is a fixed size of data that a computer processor is able to handle as a unit. It is machine dependent such as having 32/64 bit machines that indicate the word size that it is able to process at one go
-- The main 4 data types are `char(1), int(2/4), float(4), double(8)`
+- The main 4 data types are `char(1), int(2/4), float(4), double(8)` (the bracket numbers are the number of bytes each data type reserves 1 byte = 8 bits)
 - An int is either a 2/4 bytes long dependent on the machine.
 - There are qualifiers such as short/long which tell compiler how to intepret the data sizes. Again a short and long is machine dependent. However the following rules apply. short <= int <= long
-- There are qualifiers `signed` and `unsigned` which alters the range of values taken by the data type. E.g. a char is 8bits long which translates to 256 different representations. An unsigned char ranges from 0-255 whilst a signed char ranges from -128 - 127
-- The way the processor treats signed datatypes is by using the (Twos complement machine) which finds the negative representation of a binary number as the inverted bits + 1. Therefore in a 3 bit system, 2 : 010 ~ inverted = 101 -> +1 = 110 : -2
+- There are qualifiers `signed` and `unsigned` which alters the range of values taken by the data type. E.g. a char is 8bits long which translates to 256 different representations. An unsigned char ranges from 0-255 whilst a signed char ranges from -128 - 127. In general, most datatypes are defaulted to signed.
+- The processor identifies signed datatypes by using the (Twos complement method) which finds the negative representation of a binary number as the inverted bits + 1. Therefore in a 3 bit system, 2 : 010 ~ inverted = 101 -> +1 = 110 : -2
 
 **Differences between an expression & statement:**
 - Expressions include variables, operators, callables, subscritors and anything that evaluates to some value.
@@ -142,4 +151,7 @@ So we see that libraries are just an interface for easier programming for intera
 
 **Type Conversions**:
 - As a general rule of thumb, narrower types get converted to wider types. Converting in the opposite is prone to information lost but are not illegal.
+- A char is just a small integer and therefore integer operations on chars are perfectly legal.
+- There are different ways that different machines deal with sign extension. some may incur a negative integer and others might not. 
+- Be careful when type conversions occur with unsigned and signed values. -1L < 1U because int 1U is promoted to an unsigned long. However, -1L > 1UL because -1L is converted to an unsigned long which appears as a large positive number.
 - When you implicitly/explicitly cast a type to a different one, it produces a new value but the original value and it's type is unchanged.
