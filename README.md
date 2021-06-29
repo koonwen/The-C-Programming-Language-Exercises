@@ -40,7 +40,7 @@ You will find that this Repo is structured according the chapters in the book:
 
 ## Chapter 3 (Control Flow)
 > Summary: In this chapter, we discuss how to order execution of computations in a program.
-1. **Statement and Blocks** - An expression becomes a statement when it is followed by a semicolon. The semicolon is a statement terminator and braces {} are block statement and are syntatically equivalent to a single statement.
+1. **Statement and Blocks** - An expression becomes a statement when it is followed by a semicolon. The semicolon is a statement terminator and braces {} are block statement and are syntatically equivalent to a single statement. _(Read additional information "Differences between an expression & statement")_.
 2. **If-Else** - The else part in if-else is optional. The truth of a expression in the if (block) is determined as non-zero=true and zero=false. If you have nested if-else statements, it is wise to use block statements especially when the else keyword is used to demarcate which if condition it belongs to.
 3. **Else-If** - If you want to implement a multi-way decision point, an `else if (expr)` can be used.
 4. **Switch** - Like the else if keyword, switch statements can also be used in multiway decisions. They differ from else if in that they test whether a expression matches one or a number of CONSTANT integer values. Additionally, some features of the switch statement is that unless you specify the break keyword in a case to exit the switch statement. The execution falls through to below cases. Hence this may come in useful in certain scenarios. A default case may be specified to ensure all expressions are matched.
@@ -59,7 +59,7 @@ label:
 the scope of the label is the entire function which makes it a dangerous tool to use often.
 ## Chapter 4 (Functions and Program Structure)
 > Summary: functions allow us to break up our program into subroutines which are easier to test and to work with. 
-1. **Basics of Functions** - a function definition contains the following. A return type, a function name, function arguments and the code block. A minimal function could be dummy(){} which does nothing but is useful as a placeholder when planning out a program structure. Programs and functions can be spread across multiple C files and must be compiled together if the main program requires functions in separate source files. _(Read additional info "Compilation steps")
+1. **Basics of Functions** - a function definition contains the following. A return type, a function name, function arguments and the code block. A minimal function could be dummy(){} which does nothing but is useful as a placeholder when planning out a program structure. Programs and functions can be spread across multiple C files and must be compiled together if the main program requires functions in separate source files. _(Read additional info "Compilation steps")_
 2. **Functions Returning Non-integers** - So far the previous chapters only write functions that either return void or an integer. This chapter discusses about other return values. A function prototype is the function interface and function declaration. The reason why we should use function protoypes is that if not, C implicitly guesses what the function protoype from the first appearance of the function and this is potentially prone to error. By convention, we place our macros first, followed by function prototypes, followed by the main program and then the functions themselves. If a function takes no arguments, it's paramenter should be set to void.
 3. **External Variables** - The idea of external variables are declaring them outside of functions so that their scope is global. The value of making variables external is that it allows them to be shared by multiple functions and does not need to be passed in as an argument. C does not allow functions to be defined within other functions unlike some more contemporary languages. [We write a postfix calculator (reverse polish notation) to show the concept of external variables in the form of a stack]
 4. **Scope Rules** - Some general scoping rules are:
@@ -74,13 +74,24 @@ the scope of the label is the entire function which makes it a dangerous tool to
 8. **Block Structure** - Within block statements as described previously in if-else conditionals, we can declare variables which are local to the block and are reinitialized everytime the block is entered. The variables within this block are unrelated to those outside of the block if the declaration was made inside the block. Using variables that were declared outside of the block can be used to maintain it's persistence throughout the function.
 9. **Initialization** - External and static variables are guaranteed to be initialized to zero. Automatic/local and register variables are undefined (garbage values). An external/static variable MUST be initialized with a constant whilst automatic/register may be expressions and are not restricted unlike the former.
 10. **Recursion** - C functions can be used recursively whereby a function calls itself directly or indirectly. Recursion provides no saving in storage because values are stored somewhere on the stack and nor is it faster. The benefit of using recursion is that it often makes the code much more elegent. 
-11. **The C preprocessor** - We have somewhat mentioned this in "Compilation steps" in the additional notes section. The preprocessors duties are largely to expand macros. This section discusses how.
+11. **The C preprocessor** - We have somewhat mentioned this in "Compilation steps" in the additional notes section. The preprocessors duties are largely to expand macros. This section discusses how _(Read additional "Macro expansion vs Function calls)_.
     1. _File inclusion_ - `#include` keywords are usually followed by <file> (for standard library headers) or "file" (user defined headers). These two delimiters have system specific implementation in that <> typically defines the path where the C preprocessor can find these files. Usually in usr/bin for Unic and in the case of "", the path is usually where the source program was found. The C preprocessor in effect takes those files and dumps them into the current source file.
-    2. _Macro substitution_ `#define <name> <replacement text>` keywords acts as replacement text whenever 'name' is encountered. The scope of #define is from the point of it's declaration until the ent of the source file being compiled. Macro expansion is highly useful to speed up programs by preventing the overhead of function calls. Normally replacement text is to the end of the line but for long definitions, a \ can be used at the end of the line to be continued. It is also possible to define macros with arguments so that replacement text is different for different calls of the macro. (Read additional info "Pitfalls of Macro Substitution"). If you want to make sure that we are using a function and not a macro, you can use `#undef`. formal arguemtns are not expanded into quoted strings. However, by combining #argument the combination will convert the argument into a quoted string and string concatenation can be performed.
+    2. _Macro substitution_ `#define <name> <replacement text>` keywords acts as replacement text whenever 'name' is encountered. The scope of #define is from the point of it's declaration until the ent of the source file being compiled. Macro expansion is highly useful to speed up programs by preventing the overhead of function calls. Normally replacement text is to the end of the line but for long definitions, a `\` can be used at the end of the line to be continued. It is also possible to define macros with arguments so that replacement text is different for different calls of the macro. _(Read additional info "Pitfalls of Macro Substitution")_. If you want to make sure that we are using a function and not a macro, you can use `#undef`. formal arguemtns are not expanded into quoted strings. However, by combining #argument the combination will convert the argument into a quoted string and string concatenation can be performed.
     3. _Conditional Inclusion_ - Quite often, you will encounter conditional macro inclusion with `#if, #endif, #else, #elif. To cut short this we can use `#ifndef,  #endif`
 
 ## Chapert 5 (Pointers and Arrays)
-> Summary: 
+> Summary: Pretty much the single most important feature of C that makes it special. This chapter will touch on the nuances of Arrays vs pointers as well as pointer arithmetic and other various topics that allow us to make more complex and interesting programs.
+1. **Pointers and Addresses** - A typical machine has an array of consequtively numbered or addressed memory cells. Our datatypes that we have learn about previously, tells us how many cells (bytes) we need. A pointer is often a group of 2 to 4 cells/bytes that point to another address. The unary & operater returns the address of the variable. & can only be applied to obkects in memory. The unary * operator is the indirection/dereferencing operator which accesses the object that we are pointing to. By convention, it is a useful mnemonic to use the first letter to symbolize the pointer type. The unary operator * binds more tightly than arithmetic operators and thus have higher precedence. In contrast, unary operators associate right to left so the following are equivalent.
+```
+++*ip
+
+and
+
+(*ip)++
+```
+2. **Pointers and Function Arguments** - In C, arguments passed to functions are passed by value which means they are merely copies of the original data that was passed to them. A lot of the time, we want to manipulate objects passed into the functions themselves and we can do this by passing arguments by reference. This means that our local/automatic variables are pointers instead and we can do work on these variables by using the indirection operator. Other considerations to use pass by reference is if our function needs to provide a signal in it's return value but maintain changes it's made to the variables that have been passed to it. In this scenario, we can use pass by reference to store the variable that we are doing work on and provide a return value which acts a signal to the functions success/failure.
+3. **Pointers and Arrays** - The main differece between pointers and arrays are that pointers are variables wheras arrays are constants. In general, when we use arrays and access their elements, we use index subscripts. However, behind the scenes, C converts them into dereferencing pointer and offset. Therefore a[1] is equivalent to *(a+1). Additionally, during declaration, char *s is equivalent to char *s[]. When deciding whether to use an array or pointer for a function argument, you should take note that you can pass either a pointer or array as the function argument and the function will not complain.
+4. **Address Arithmetic** - Pointers can participate in certain kinds of arithmetic and comparsion operations. More often than not, when trying to compare two pointers, we typically use subtraction to find the offset between the two pointers. Moreover, if we want to check the position of a pointer relative to another, we can use the <, > operators. The value 0 which for pointers is represented as NULL is guranteed to be an invalid address for data. Hence we conveniently use the NULL pointer to indicate an error. Quite simply, incrementing, decrementing and offsetting depends on the type of the pointer which will determine the number of bytes that it is moved by during the operation. It is illegal to add two points, multiply, divide or shift or mask them as one might expect.
 
 ## Chapter 6 (Structures)
 > Summary:
@@ -151,32 +162,6 @@ So we see that libraries are just an interface for easier programming for intera
 
 # Additional Notes
 
-**What is alignment?**
-- In C, we have very tight control over allocation in memory space. This is a good and bad thing. This means while we can implement programs that are resource efficient, we also must be very careful in our implementations to prevent accessing memory spaces we should not be accessing and in this case, make sure memory is aligned.
-- In particular, one issue that comes up often is memory alignment. CPU's typically require that (sometimes for performance reasons) data is stored at addresses that is some multiple of 2^n.
-- In Chapter 8.7. We tackle the problem of ensuring the memory alignment of memory blocks we get from the OS. To overcome this, we call memory blocks that are multiples of the linked list node that stores information about the memory block. On top of this, the linked list node is defined as a union with an instance of the most restrictive type (The largest data type). This ensures space returned by mallloc are aligned AND can hold any kind of data type.
-
-**Unix File descriptors vs Standard lib File pointers**
-- Firstly, it is important to note that system calls are an interface that allow programs to access and use hardware resources. The standard library functions are somewhat made for programmer ease of usability and therefore most of the time are wrappers for system calls.
-- For handling files. The lowest entry point for C programs to access hardware is through system calls. The system call `open` returns a file descriptor to the file requested. The standard library provides the function `fopen` which essentially does the same thing except it returns a pointer to an internally defined stucture for representing files (`FILE *`).
-- The `FILE` structure contains information about the file descriptor and, permissions and buffer. Probably the biggest difference from the file descriptor and `FILE` is the information stored in `FILE` is buffered whilst reading from the file descriptor will require a system call every time.
-
-**Macro expansion vs Function calls**
-- Macro expansion is generally prefered when you have a small routine instead of writing a function call. The reason for this is that extra resources are used when a function call is made such as copying values because of the pass by value property of arguments.
-- On the other hand, macro expansion just copies the code during the preprossesing step so no values are copied over.
-- However, most compilers today, inline their functions so it becomes analogous to macro expansion.
-
-**What is a stream & buffer?**
-- A stream is just an interface representing a sequence of bytes/data. The use of this is so we have a uniform way of interacting with data regardless of source or destination.
-- The name stream can be applied almost to any kind of data transfer whether it be by keyboard input or program output or file reading or writing. Data comes in quite intuitively as a sequence of data and a stream is just a way to describe this process.
-- A buffer on the other hand, is a sequence of data stored in memory.
-- A stream can be put in a buffer for easier handling.
-
-**Declaration vs definition?**
-- A declaration is merely telling the program what the function returns, and its argument types. A function is usually declared before being used in another function/program by a function protype. If a function protoype is not found. The functions return and argument types are implicitly declared by the first use in the program.
-- A definition is the entire function code itself including it's argument variable names and it's body.
-- A definition will reserve storage space for a function whereas a declaration decribes what the properties of a function are.
-
 **Data types, Word sizes, Bits and Bytes:**
 - A word is a fixed size of data that a computer processor is able to handle as a unit. It is machine dependent such as having 32/64 bit machines that indicate the word size that it is able to process at one go
 - The main 4 data types are `char(1), int(2/4), float(4), double(8)` (the bracket numbers are the number of bytes each data type reserves 1 byte = 8 bits)
@@ -185,16 +170,10 @@ So we see that libraries are just an interface for easier programming for intera
 - There are qualifiers `signed` and `unsigned` which alters the range of values taken by the data type. E.g. a char is 8bits long which translates to 256 different representations. An unsigned char ranges from 0-255 whilst a signed char ranges from -128 - 127. In general, most datatypes are defaulted to signed.
 - The processor identifies signed datatypes by using the (Twos complement method) which finds the negative representation of a binary number as the inverted bits + 1. Therefore in a 3 bit system, 2 : 010 ~ inverted = 101 -> +1 = 110 : -2
 
-**Differences between an expression & statement:**
-- Expressions include variables, operators, callables, subscritors and anything that evaluates to some value.
-- Statements on the other hand are generally a collection of expressions but may also include control flow, etc. Expressions are statements but the same is not true vice versa.
-
-**Type Conversions**:
-- As a general rule of thumb, narrower types get converted to wider types. Converting in the opposite is prone to information lost but are not illegal.
-- A char is just a small integer and therefore integer operations on chars are perfectly legal.
-- There are different ways that different machines deal with sign extension. some may incur a negative integer and others might not. 
-- Be careful when type conversions occur with unsigned and signed values. -1L < 1U because int 1U is promoted to an unsigned long. However, -1L > 1UL because -1L is converted to an unsigned long which appears as a large positive number.
-- When you implicitly/explicitly cast a type to a different one, it produces a new value but the original value and it's type is unchanged.
+**Declaration vs definition?**
+- A declaration is merely telling the program what the function returns, and its argument types. A function is usually declared before being used in another function/program by a function protype. If a function protoype is not found. The functions return and argument types are implicitly declared by the first use in the program.
+- A definition is the entire function code itself including it's argument variable names and it's body.
+- A definition will reserve storage space for a function whereas a declaration decribes what the properties of a function are.
 
 **2's Complement System**
 - The 2's complement system is designed to provide a way of having signed and unsigned representation in binary
@@ -209,6 +188,22 @@ So we see that libraries are just an interface for easier programming for intera
 - The first step is preprocessing. This steps expands macros and concatenates source files together.
 - The next step is assembly. This converts the source code into assembly code and are stored as .s files.
 - The final step is the converting assembly code into object code/machine code. This is code that can be executed by the microprocessor and are the end products of our compilation labelled as .o files. However, you will only likely product these .o files when you compile multiple source programs together, each producing its own object file and also producing the final executable. Additionally there is the concept of statically linked or dynamically linked libraries (.so files). The difference here is that statically linked libraries are combined with the executable program during compilation and thus produces a bigger executable file. On the other hand, dynamically linked programs refer to these libraries during runtime and thus do not compile their object code with the executable program.
+
+**Type Conversions**:
+- As a general rule of thumb, narrower types get converted to wider types. Converting in the opposite is prone to information lost but are not illegal.
+- A char is just a small integer and therefore integer operations on chars are perfectly legal.
+- There are different ways that different machines deal with sign extension. some may incur a negative integer and others might not. 
+- Be careful when type conversions occur with unsigned and signed values. -1L < 1U because int 1U is promoted to an unsigned long. However, -1L > 1UL because -1L is converted to an unsigned long which appears as a large positive number.
+- When you implicitly/explicitly cast a type to a different one, it produces a new value but the original value and it's type is unchanged.
+
+**Differences between an expression & statement:**
+- Expressions include variables, operators, callables, subscritors and anything that evaluates to some value.
+- Statements on the other hand are generally a collection of expressions but may also include control flow, etc. Expressions are statements but the same is not true vice versa.
+
+**Macro expansion vs Function calls**
+- Macro expansion is generally prefered when you have a small routine instead of writing a function call. The reason for this is that extra resources are used when a function call is made such as copying values because of the pass by value property of arguments.
+- On the other hand, macro expansion just copies the code during the preprossesing step so no values are copied over.
+- However, most compilers today, inline their functions so it becomes analogous to macro expansion.
 
 **Pitfalls of Macro Substitution**
 - Some common mistakes that you can make with macro substitution can be quite hard to spot. in particular, it may be good advice to double check the arguements that are being expanded. For e.g.
@@ -231,5 +226,22 @@ vs
 
 square(2 + 1);
 
+
 //The second implementation protects us against accidently incurring wrong order of eval.
 ```
+
+**What is alignment?**
+- In C, we have very tight control over allocation in memory space. This is a good and bad thing. This means while we can implement programs that are resource efficient, we also must be very careful in our implementations to prevent accessing memory spaces we should not be accessing and in this case, make sure memory is aligned.
+- In particular, one issue that comes up often is memory alignment. CPU's typically require that (sometimes for performance reasons) data is stored at addresses that is some multiple of 2^n.
+- In Chapter 8.7. We tackle the problem of ensuring the memory alignment of memory blocks we get from the OS. To overcome this, we call memory blocks that are multiples of the linked list node that stores information about the memory block. On top of this, the linked list node is defined as a union with an instance of the most restrictive type (The largest data type). This ensures space returned by mallloc are aligned AND can hold any kind of data type.
+
+**What is a stream & buffer?**
+- A stream is just an interface representing a sequence of bytes/data. The use of this is so we have a uniform way of interacting with data regardless of source or destination.
+- The name stream can be applied almost to any kind of data transfer whether it be by keyboard input or program output or file reading or writing. Data comes in quite intuitively as a sequence of data and a stream is just a way to describe this process.
+- A buffer on the other hand, is a sequence of data stored in memory.
+- A stream can be put in a buffer for easier handling.
+
+**Unix File descriptors vs Standard lib File pointers**
+- Firstly, it is important to note that system calls are an interface that allow programs to access and use hardware resources. The standard library functions are somewhat made for programmer ease of usability and therefore most of the time are wrappers for system calls.
+- For handling files. The lowest entry point for C programs to access hardware is through system calls. The system call `open` returns a file descriptor to the file requested. The standard library provides the function `fopen` which essentially does the same thing except it returns a pointer to an internally defined stucture for representing files (`FILE *`).
+- The `FILE` structure contains information about the file descriptor and, permissions and buffer. Probably the biggest difference from the file descriptor and `FILE` is the information stored in `FILE` is buffered whilst reading from the file descriptor will require a system call every time.
