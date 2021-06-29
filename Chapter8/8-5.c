@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <syscalls.h>		/* supposedly holds the open/close/read/write syscalls */
+#include "syscalls.h"		/* supposedly holds the open/close/read/write syscalls */
 #include <fcntl.h>		/* flags for read and write */
 #include <sys/types.h>		/* typedefs for DIR and Dirent */
 #include <sys/stat.h>		/* structure returned by stat */
