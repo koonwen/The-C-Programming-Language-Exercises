@@ -32,7 +32,7 @@ You will find that this Repo is structured according the chapters in the book:
 5. **Arithmetic operators**: include {+,-,/,*,%} associate left to right. Integer division truncates fractional part and modulus cannot be applied to float or double. 
 6. **Relational and Logical operators** - relational include { <, <=, >, >= } AND equality operators { ==, != } however the former has higher precedence than the latter. Arithmetic operators have higher precedence over relational operators. Logical operators include {&&, ||}. Expressions connected by logical operators also evaluate left to right and stop as soon as truth or falsehood is determined. Arithmetic and relational operators have higher precendence over logical operators and && is higher than ||. unary ! negation operator can also come in useful at times.
 7. **Type conversions** - when an operator encounters with operands with different types. Type conversion can occer where the general rule is that narrow types are converted to match the wider type. _(Read notes "Type Conversions" & "2's Complement System")_
-8. **Increment and Decrement Operators** - prefix/postfix { ++/-- } operate on variables incrementing or decrementing before/after the expression is evaluated.
+8. **Increment and Decrement Operators** - prefix/postfix { ++/-- } operate on variables incrementing or decrementing before/after the value is used.
 9. **Bitwise operators** - inlclude { &, |, ^, <<, >>, ~ }
 10. **Assignment Operators and Expressions** - in most progrmaming languages the `=` is the assignment operator instead of equality. Most binary operators including { +, -, *, /, %, <<, >>, &, ^, | } can be combined with the assignment operator to shorten code.
 11. **Conditional Expressions** - These are typically `if else` statements, however we can also shorten it to be more succinct if appropriate using a ternary " expr ? expr : expr" statement
@@ -81,32 +81,80 @@ the scope of the label is the entire function which makes it a dangerous tool to
 
 ## Chapert 5 (Pointers and Arrays)
 > Summary: Pretty much the single most important feature of C that makes it special. This chapter will touch on the nuances of Arrays vs pointers as well as pointer arithmetic and other various topics that allow us to make more complex and interesting programs.
-1. **Pointers and Addresses** - A typical machine has an array of consequtively numbered or addressed memory cells. Our datatypes that we have learn about previously, tells us how many cells (bytes) we need. A pointer is often a group of 2 to 4 cells/bytes that point to another address. The unary & operater returns the address of the variable. & can only be applied to obkects in memory. The unary * operator is the indirection/dereferencing operator which accesses the object that we are pointing to. By convention, it is a useful mnemonic to use the first letter to symbolize the pointer type. The unary operator * binds more tightly than arithmetic operators and thus have higher precedence. In contrast, unary operators associate right to left so the following are equivalent.
-```
-++*ip
-
-and
-
-(*ip)++
-```
+1. **Pointers and Addresses** - A typical machine has an array of consequtively numbered or addressed memory cells. Our datatypes that we have learn about previously, tells us how many cells (bytes) we need. A pointer is often a group of 2 to 4 cells/bytes that point to another address. The unary & operater returns the address of the variable. & can only be applied to obkects in memory. The unary * operator is the indirection/dereferencing operator which accesses the object that we are pointing to. By convention, it is a useful mnemonic to use the first letter to symbolize the pointer type. The unary operator * binds more tightly than arithmetic operators and thus have higher precedence. In contrast, unary operators associate right to left so the following are equivalent. `++*ip` and `(*ip)++`.
 2. **Pointers and Function Arguments** - In C, arguments passed to functions are passed by value which means they are merely copies of the original data that was passed to them. A lot of the time, we want to manipulate objects passed into the functions themselves and we can do this by passing arguments by reference. This means that our local/automatic variables are pointers instead and we can do work on these variables by using the indirection operator. Other considerations to use pass by reference is if our function needs to provide a signal in it's return value but maintain changes it's made to the variables that have been passed to it. In this scenario, we can use pass by reference to store the variable that we are doing work on and provide a return value which acts a signal to the functions success/failure.
 3. **Pointers and Arrays** - The main differece between pointers and arrays are that pointers are variables wheras arrays are constants. In general, when we use arrays and access their elements, we use index subscripts. However, behind the scenes, C converts them into dereferencing pointer and offset. Therefore a[1] is equivalent to *(a+1). Additionally, during declaration, char *s is equivalent to char *s[]. When deciding whether to use an array or pointer for a function argument, you should take note that you can pass either a pointer or array as the function argument and the function will not complain.
 4. **Address Arithmetic** - Pointers can participate in certain kinds of arithmetic and comparsion operations. More often than not, when trying to compare two pointers, we typically use subtraction to find the offset between the two pointers. Moreover, if we want to check the position of a pointer relative to another, we can use the <, > operators. The value 0 which for pointers is represented as NULL is guranteed to be an invalid address for data. Hence we conveniently use the NULL pointer to indicate an error. Quite simply, incrementing, decrementing and offsetting depends on the type of the pointer which will determine the number of bytes that it is moved by during the operation. It is illegal to add two points, multiply, divide or shift or mask them as one might expect.
+5. **Character Pointers and Functions** - Now we piece together the dots identifying that strings that we have been storing as character arrays can be manipulated with a character pointer. One must be cognizant of the difference between definitions with character pointers and character arrays 
+``` 
+char amessage[] = "hello";
+char *pmessage = "hello";
+```
+amessage always refers to the same storage and the characters within the array can be modified. pmessage on the other hand is a pointer to a string literal and can be changed to point somewhere else but cannot modify the string it points to. Some elegant ways of using char pointers are as follows. A string copy function can be reduced to 
+```
+void strcpy(char *s, char *t)
+{
+    while (*s++ = *t++)     \\ unary operators associate right to left.
+        ;                   \\ hence the postfix ++ increments the pointers only after
+                            \\ the value is used.
+}
+```
+6. **Pointer Arrays; Pointers to Pointers** - Since pointers are variables, they can be used in the same fashion as other variables and stored in arrays. Even more interestingly, you can have a pointer to a pointer. This may sound useless and confusing at first but in this chapter, we implement a sorting method on strings which we will represent as an array of character pointers that we shift around instead of the actual character array blocks themselves. Moving the actual arrays themselves would be costly and not particularly trivial to implement. A pointer array fixes this issue.
+7. **Multi-dimensional Arrays** - Sometimes we need to represent some kind of matrix. The most obvious way of doing this is to create an array of arrays. Although in reality we favour using an array of pointers, this may sometimes come in useful to keep data together. Take note when declaring a multi-dimensional array. At the minimum, we need to tell C how many columns are in the array. Thus `int multiarray[][10]` is legal whilst `int multiarray[10][]` is not. This is because C needs to know what kind of pointer is being passed. When passing a multi-dimensional array as an argument, it decays into a pointer to an array of rows where each row is an array of 10 ints. Subscript [] notation has higher precedence that the indirection *. Hence `int *daytab[]` is a array of pointers to ints.
+8. **Initialization of Pointer Arrays** - This section discusses the considerations of using an internal static array in function design.
+9. **Pointers vs. Multi-dimensional Arrays** - It can be confusing to understand the differences between a array of pointers and a multi-dimensional array. In short, a multi-dimensional array reserves the fullsize of the array whilst an array of pointers only reserves space for the pointers. E.g.
+```
+int a[10][20];      \\ Reserves 200 spaces for ints
+int *b[10];         \\ Reserves only 10 spaces for pointers to array[10] of ints
+                    \\ However if b is initialized with array[20] of ints, then there would be 200 spaces for ints + 10 spaces for pointers to the int arrays.
+```
+The fundamental advantage of using pointer to arrays is that it allows rows to be of different lengths.
+
+10. **Command-Line Arguments** - To write a C program that accepts command line arguments we provide two parameters to the main function `int argc, char *argv[]`. argc holds the count of number of arguments including the program itself. argv is an array of pointers to the character strings of the parameters and the program name. The standard defines that argv[argc] is a NULL pointer.
+11. **Pointers to Functions** - While functions are not variables, it is possible to define pointers to functions. In most situations, defining a function pointer is used when passes them to other functions as arguments. The names of functions themselves are the addresses of the functions just as array names are. Therefore when passing a function as an argument, the & operator is not neccessary. A pointer can be converted to a void pointer and back without lost of information. However, you cannot do pointer arithmetic on void pointers. 
+12. **Complicated Declarations** - One thing to get used to in C is how to read syntax of declarations because they can't be read left to right. For functions, the function () is higher precendence than the indirection operator. This is by far the most complicated chapter and we implement a recursive descent program that prints out the declaration of a function.
 
 ## Chapter 6 (Structures)
-> Summary:
-- Basic structure syntax
-- How to use structures in functions
-- Structure arrays `struct example[10]`
-- Pointers to structures and "`->`" syntax to access to members
-- Self referential structures (Tree structures)
-- Table lookup (Hashing and Linked list structures)
-- `typedef` keyword
-- `union` keyword
-- Bit-fields (Used for packing objects in a single word, E.g. Defining a set of masks alternatively fields can be used which are structs that have members which are explicitly defined unsigned/signed ints and with : < bitsize >)
+> Summary: A structure is a collection of variables and is useful when we want to create user defined objects that group together data that is similar or related.
+1. **Basic structure syntax** - A structure declaration takes the form of the structure name as well as it's members.
+```
+struct point {
+    int x;
+    int y;
+};
+```
+Just like any normal variable declaration, we can add on variable names after the right brace. Structures may also be unnamed. Also sometimes the name of structures are referred to as tags. Initialization of structures can be done in the same way we initialize arrays. To access members, we use the dot "." operator and member names can be identified by context so names that are reused outside of the structure is legal.
+
+2. **How to use structures in functions** - The only legal operations on structures are copying it, assigning it as a unit, taking its address with & and accessing its members. Keep in mind that when passing structures to functions, they are pass by value. If you want to modify existing structures, you would need to use the pass by reference method. The structure member operator . is higher precedence than * operator. If a pointer to a structure is being used. The -> operator is used to access it's members and is syntatic sugar to the dot operation. Structure operators {. , -> , (), []} are at the top of the precedence heirachy and bind very tightly.
+3. **Array of Structures**  - the syntax for this construct is `struct example[10]`. To initialize such a structure. We can use a similar syntax to how we initialized multi-dimensional arrays as well as structure initialization. To get the length of an array. One can use pointer arithmetic by determining the size of the array divided by the size of it's elements.
+4. **Pointers to Structures** - This section provides mainly examples of how to use pointers to structures with a binary search program.
+5. **Self referential structures** - Having structures that refer to themselves are extremely useful for some data structures. In particular, this section describes how we can implement a tree structure
+6. **Table lookup** - More on structures, in this section we implement a table lookup program which is a simplified version of the C preprocesser which replaces symbols with replacement text. This table is designed with a hash table and linked list which are build off of structures.
+7. **Typedef** - When a structure is defined. The user must type out the entire form for it's declaration. For e.g. if I want to initialize the structure point defined earlier, I have to declare `struct point mypoint;` to save on having to use struct in your declaration. `typedef allows` us to define new types that we can refer to by its tag. By convention, typedefs of structures have a tag that is capitalized. 
+8. **Unions** - Unions are a form of structure that allows us to declare a variable that may hold different types of data. This is done internally by C to reserve a storage space of the most restrictive type that is machine dependent (The data type with the largest size boundary). A union is constructed in the same way as a struct but with the `union` keyword instead. Accessing the members of the union is also the same as structures. It is however the responsibility of the user to keep track of the current type of data that is stored in the union. Later on, we will find this useful for alignment and implementing malloc in Chapter 8. _(Read additional notes "What is alignment")_
+9. **Bit-fields** - Another tricky concept to understand. Bit fields are used mainly when storage space is a premium and we want even more fine tune control over our data. Bit-field operations are used for packing objects in a single word. Most often, bit-fields are used for flags. Encoding these information most compactly would be to set one-bit flags in a single char/int. The way to do this without bit-fields is to define a set of "masks" corresponding to relevant bit positions
+```
+                //In 4 bits binary this corresponds to
+#define A 01    //0001
+#define B 01    //0010
+#define C 04    //0100
+
+or
+
+enum { A = 01, B = 02, C = 04 };
+```
+Using these bits as flags would then be a matter of bit-fiddling and require a good understanding of bit operations to be effective. An alternative to this C provides a more programmer friendly way of dealing with bits by using bit-fields/fields. The construct of bitfields are similar to structures and the below example is equivalent to the #define constructs above.
+```
+struct {
+    unsigned int A : 1;
+    unsigned int B : 1;
+    unsigned int C : 1;
+} flags;
+```
+Here we have defined a variable called flag that contains three 1-bit fields. The number beside the colon indicates the width in bits. We need to declare them unsigned ints to ensure that they are unsigned quantities. This is because the implementation of bit fields are highly system dependent, they may be assigned left to right or right to left. To ensure consistency and portability across systems we declare them appropriately with the unsigned qualifier. Consequently, bit-fields can be manipulated and tested with more familiar and intuitive logical and equality operators.
 
 ## Chapter 7 (Input & Output)
-> Summary: 
+> Summary: Our programs are pretty much self contained without any I/O. While I/O facilities are not part of the C language itself, to create programs that are able to interact with it's environment. A discussion of I/O is in good measure. Mostly we will explore the standard library facilities in <stdio.h>
 1. **Standard input and output**: The C standard library implements a model to deal with I/O in the form of a text stream which are lines of text separated by a newline character. If the system doesn't work this way, the library makes it appear as though it does. Most systems use use indirection operators `< >` and piping `|`. It is important to understand the nuance of these two system functions. The <> in `#define <stdlib.h>` tells UNIX systems to look into /usr/include to find these header files.
 2. **Formatted Output - Printf**: printf is a library function that formats input based on your specification and passes it to standard output. There is a plethora of formatting functionality built into print. It can be found on (pg 154). Most useful to know is that a minus sign `%-` means left adjustment. A number `%5` determines the minimum field width of the output (used mostly for padding). A period separates the width from the precision of the output `%.3`. 
 3. **Variable-Length Argument Lists**: elipses used in function declaration indicate that the function can take a variable number of arguments. e.g. `int myfunc(int, ...)`. In order to access the variable list, the C standard library provides the type va_list in <stdarg.h>. [Exercise: minprintf]
@@ -129,9 +177,9 @@ int myfunc(int x, ...)
 8. **Miscellaneous Functions** - `ungetc` only gurantees 1 character of pushback. You can execute system programs from within c programs by using the function `system(char *s)`. The difference between calloc and malloc is that calloc initializes storage to 0.
 
 ## Chapter 8 (The Unix System Interface):
-Summary : In order to allow our programs to gain access to the O.S services, the Unix operating system provides a set of system functions(system calls) which can be used by user programs to gain access to system resources.
-1. **File descriptors** - In Unix, everything is represented as a file. The reason for this is that it establishes a uniform way of interacting with the various resources in a machine. Generally when performing a read/write operation to a file, the file must first must be open. The O.S, is responsible for providing the file descriptor (After checking permissions, etc.) which is the entry point to manipulate the file. The file descriptor is a small non-negative integer and is analogour to the file pointer described in the standard library. We learnt that stdin, stdout and stderr are in fact the file decriptors {0,1,2} opened by the O.S. whenever a program is run. All information about the opened file is maintained by the system. The user program only interacts with the file descriptor.
-2. **Low Level I/O - Read and Write** - System calls are in effect the entry point in which user programs can use the hardware of the device. Thus far we have been using standard library I/O functions such as `getchar` and `putchar` but these functions are built using system calls. I.e. getchar(), is just pre-defined the read operation on the file descriptor 0 (which corresponds to stdin, by default the keyboard) with a size of 1 byte (because a char is 1 byte). However, do take note that there are other implementations of getchar that instead take more input but buffers them and hands out the char input one at a time.
+> Summary : In order to allow our programs to gain access to the O.S services, the Unix operating system provides a set of system functions(system calls) which can be used by user programs to gain access to system resources.
+1. **File descriptors** - In Unix, everything is represented as a file. The reason for this is that it establishes a uniform way of interacting with the various resources in a machine. Generally when performing a read/write operation to a file, the file must first must be open. The O.S, is responsible for providing the file descriptor (After checking permissions, etc.) which is the entry point to manipulate the file. The file descriptor is a small non-negative integer and is analogour to the file pointer described in the standard library. We learnt that stdin, stdout and stderr are in fact the file decriptors {0,1,2} opened by the O.S. whenever a program is run. All information about the opened file is maintained by the system. The user program only interacts with the file descriptor. _(Read additional notes "Unix File descriptors vs Standard lib File pointers")_
+2. **Low Level I/O - Read and Write** - System calls are in effect the entry point in which user programs can use the hardware of the device. Thus far we have been using standard library I/O functions such as `getchar` and `putchar` but these functions are built using system calls. I.e. getchar(), is just pre-defined the read operation on the file descriptor 0 (which corresponds to stdin, by default the keyboard) with a size of 1 byte (because a char is 1 byte). However, do take note that there are other implementations of getchar that instead take more input but buffers them and hands out the char input one at a time. _(Read additional notes "What is a stream & buffer?")_ 
 ```
 #include "syscalls.h"
 
@@ -158,7 +206,6 @@ automatically promoting char to an int) we explicitly cast it to an unsigned cha
 So we see that libraries are just an interface for easier programming for interacting with IO and implement syscalls. On the other hand syscalls are the interface to the IO themselves. In general, within libraries functions are defined with underscores _iobuf to minimize conflict with user program names. Both `getc` and `fopen` require the function `_filbuf` which creates and fills the buffer if no buffer has been allocated or `_flushbuf` if it is full and needs to be reinitialized.
 6. **Example - Listing Directories** - Sometimes we just want information about the file, not its contents. There are system calls for that. First to provide an overview of the UNIX filesystem structure. A directory is a file that contains a list of filenames and some indication of where they are located. The "location" is an index into another table called an inode list. The inode of a file is where all information about the file except its name is found. In short, the directory's file data is a table of the filenames it's holding and their inode number. The inode number is resolved with the inode list. Following that inode holds all data about that file except it's name. Following a directory file is also the same.  [`fsize` program that has similar functionality to `ls` bash command - whilst the `fsize` is system dependent, with a little tweaks, the program can be modified to work on local machines as long as we are able to see the underlying data structures used to represent directories and files.] Since the program structure is quite complex, this drawing tries to give a visual idea of what the program is doing ![fsize pictoral representation](Images/fsize_drawing.png)
 7. **Example - A Storage Allocator** - The previous implementation of memory allocation in Chapter 5 was a rudimentary stack with a static large array. This has 2 problems, firstly free must be called according to LIFO order. Secondly, reserving a large array in every program might not be resource savvy. The new implementation attempts to solve these problems by using a linked-list instead. Our implementation of the struct representing the linked-list node must allow us to maintain alignment of the storage returned (Read additional notes "What is memory alignment"). `malloc` maintains a free list which is not initialised until the first call is made. The properties of the free list is that each memory block address is ordered in ascending order to allow consistent pointer arithmetic. At the end of the list, the last node wraps around to point to the starting node. On the first call, `malloc` will initialize the free list to point to itself with a size of zero. Subsequently, it will iterate through the free list until an available block is found or it wraps around. If there are no available blocks, `morecore` is called which requests from the operating system to provide more memory. The `morecore` function must also insert the new memory block into the new list carefully by calling `free`. `free` iterates through the list to find the space where the memory block is relative to the free list so that it can be inserted properly in accordance to the properties of the free list.
-
 
 # Additional Notes
 
@@ -235,13 +282,13 @@ square(2 + 1);
 - In particular, one issue that comes up often is memory alignment. CPU's typically require that (sometimes for performance reasons) data is stored at addresses that is some multiple of 2^n.
 - In Chapter 8.7. We tackle the problem of ensuring the memory alignment of memory blocks we get from the OS. To overcome this, we call memory blocks that are multiples of the linked list node that stores information about the memory block. On top of this, the linked list node is defined as a union with an instance of the most restrictive type (The largest data type). This ensures space returned by mallloc are aligned AND can hold any kind of data type.
 
+**Unix File descriptors vs Standard lib File pointers**
+- Firstly, it is important to note that system calls are an interface that allow programs to access and use hardware resources. The standard library functions are somewhat made for programmer ease of usability and therefore most of the time are wrappers for system calls.
+- For handling files. The lowest entry point for C programs to access hardware is through system calls. The system call `open` returns a file descriptor to the file requested. The standard library provides the function `fopen` which essentially does the same thing except it returns a pointer to an internally defined stucture for representing files (`FILE *`).
+- The `FILE` structure contains information about the file descriptor and, permissions and buffer. Probably the biggest difference from the file descriptor and `FILE` is the information stored in `FILE` is buffered whilst reading from the file descriptor will require a system call every time.
+
 **What is a stream & buffer?**
 - A stream is just an interface representing a sequence of bytes/data. The use of this is so we have a uniform way of interacting with data regardless of source or destination.
 - The name stream can be applied almost to any kind of data transfer whether it be by keyboard input or program output or file reading or writing. Data comes in quite intuitively as a sequence of data and a stream is just a way to describe this process.
 - A buffer on the other hand, is a sequence of data stored in memory.
 - A stream can be put in a buffer for easier handling.
-
-**Unix File descriptors vs Standard lib File pointers**
-- Firstly, it is important to note that system calls are an interface that allow programs to access and use hardware resources. The standard library functions are somewhat made for programmer ease of usability and therefore most of the time are wrappers for system calls.
-- For handling files. The lowest entry point for C programs to access hardware is through system calls. The system call `open` returns a file descriptor to the file requested. The standard library provides the function `fopen` which essentially does the same thing except it returns a pointer to an internally defined stucture for representing files (`FILE *`).
-- The `FILE` structure contains information about the file descriptor and, permissions and buffer. Probably the biggest difference from the file descriptor and `FILE` is the information stored in `FILE` is buffered whilst reading from the file descriptor will require a system call every time.
