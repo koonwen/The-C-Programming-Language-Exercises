@@ -1,5 +1,5 @@
 # The-C-Programming-Language-Exercises
-A Repo containing my exercise solutions for "The C Programming Language" - by Brian Kernighan and Dennis Ritchie
+A Comprehemsive Repo containing my exercise solutions for "The C Programming Language" - by Brian Kernighan and Dennis Ritchie. In addition it contains my notes pertaining to each chapter that I find useful
 
 You will find that this Repo is structured according the chapters in the book:
  - Chapter 1 (A Tutorial Introduction)
@@ -9,6 +9,7 @@ You will find that this Repo is structured according the chapters in the book:
  - Chapert 5 (Pointers and Arrays)
  - Chapter 6 (Structures)
  - Chapter 7 (Input & Output)
+ - Chapter 8 (The Unix System Interface)
 
 # By Chapters
 ## Chapter 1 (A Tutorial Introduction):
