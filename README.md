@@ -87,12 +87,12 @@ the scope of the label is the entire function which makes it a dangerous tool to
 3. **Pointers and Arrays** - The main differece between pointers and arrays are that pointers are variables wheras arrays are constants. In general, when we use arrays and access their elements, we use index subscripts. However, behind the scenes, C converts them into dereferencing pointer and offset. Therefore a[1] is equivalent to *(a+1). Additionally, during declaration, char *s is equivalent to char *s[]. When deciding whether to use an array or pointer for a function argument, you should take note that you can pass either a pointer or array as the function argument and the function will not complain.
 4. **Address Arithmetic** - Pointers can participate in certain kinds of arithmetic and comparsion operations. More often than not, when trying to compare two pointers, we typically use subtraction to find the offset between the two pointers. Moreover, if we want to check the position of a pointer relative to another, we can use the <, > operators. The value 0 which for pointers is represented as NULL is guranteed to be an invalid address for data. Hence we conveniently use the NULL pointer to indicate an error. Quite simply, incrementing, decrementing and offsetting depends on the type of the pointer which will determine the number of bytes that it is moved by during the operation. It is illegal to add two points, multiply, divide or shift or mask them as one might expect.
 5. **Character Pointers and Functions** - Now we piece together the dots identifying that strings that we have been storing as character arrays can be manipulated with a character pointer. One must be cognizant of the difference between definitions with character pointers and character arrays 
-``` 
+```c
 char amessage[] = "hello";
 char *pmessage = "hello";
 ```
 amessage always refers to the same storage and the characters within the array can be modified. pmessage on the other hand is a pointer to a string literal and can be changed to point somewhere else but cannot modify the string it points to. Some elegant ways of using char pointers are as follows. A string copy function can be reduced to 
-```
+```c
 void strcpy(char *s, char *t)
 {
     while (*s++ = *t++)     \\ unary operators associate right to left.
@@ -104,7 +104,7 @@ void strcpy(char *s, char *t)
 7. **Multi-dimensional Arrays** - Sometimes we need to represent some kind of matrix. The most obvious way of doing this is to create an array of arrays. Although in reality we favour using an array of pointers, this may sometimes come in useful to keep data together. Take note when declaring a multi-dimensional array. At the minimum, we need to tell C how many columns are in the array. Thus `int multiarray[][10]` is legal whilst `int multiarray[10][]` is not. This is because C needs to know what kind of pointer is being passed. When passing a multi-dimensional array as an argument, it decays into a pointer to an array of rows where each row is an array of 10 ints. Subscript [] notation has higher precedence that the indirection *. Hence `int *daytab[]` is a array of pointers to ints.
 8. **Initialization of Pointer Arrays** - This section discusses the considerations of using an internal static array in function design.
 9. **Pointers vs. Multi-dimensional Arrays** - It can be confusing to understand the differences between a array of pointers and a multi-dimensional array. In short, a multi-dimensional array reserves the fullsize of the array whilst an array of pointers only reserves space for the pointers. E.g.
-```
+```c
 int a[10][20];      \\ Reserves 200 spaces for ints
 int *b[10];         \\ Reserves only 10 spaces for pointers to array[10] of ints
                     \\ However if b is initialized with array[20] of ints, then there would be 200 spaces for ints + 10 spaces for pointers to the int arrays.
@@ -134,7 +134,7 @@ Just like any normal variable declaration, we can add on variable names after th
 7. **Typedef** - When a structure is defined. The user must type out the entire form for it's declaration. For e.g. if I want to initialize the structure point defined earlier, I have to declare `struct point mypoint;` to save on having to use struct in your declaration. `typedef allows` us to define new types that we can refer to by its tag. By convention, typedefs of structures have a tag that is capitalized. 
 8. **Unions** - Unions are a form of structure that allows us to declare a variable that may hold different types of data. This is done internally by C to reserve a storage space of the most restrictive type that is machine dependent (The data type with the largest size boundary). A union is constructed in the same way as a struct but with the `union` keyword instead. Accessing the members of the union is also the same as structures. It is however the responsibility of the user to keep track of the current type of data that is stored in the union. Later on, we will find this useful for alignment and implementing malloc in Chapter 8. _(Read additional notes "What is alignment")_
 9. **Bit-fields** - Another tricky concept to understand. Bit fields are used mainly when storage space is a premium and we want even more fine tune control over our data. Bit-field operations are used for packing objects in a single word. Most often, bit-fields are used for flags. Encoding these information most compactly would be to set one-bit flags in a single char/int. The way to do this without bit-fields is to define a set of "masks" corresponding to relevant bit positions
-```
+```c
                 //In 4 bits binary this corresponds to
 #define A 01    //0001
 #define B 01    //0010
@@ -145,7 +145,7 @@ or
 enum { A = 01, B = 02, C = 04 };
 ```
 Using these bits as flags would then be a matter of bit-fiddling and require a good understanding of bit operations to be effective. An alternative to this C provides a more programmer friendly way of dealing with bits by using bit-fields/fields. The construct of bitfields are similar to structures and the below example is equivalent to the #define constructs above.
-```
+```c
 struct {
     unsigned int A : 1;
     unsigned int B : 1;
@@ -267,7 +267,7 @@ max(i++, j++);  // This will not do what was expected.
 // We have incremented the values more than we wanted!
 ```
 - Also we have to pay attention to the order of evaluation. For e.g.
-```
+```c
 #define square(x) x * x
 vs
 #define square(x) (x) * (x)
