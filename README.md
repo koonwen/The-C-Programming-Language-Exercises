@@ -49,7 +49,7 @@ You will find that this Repo is structured according the chapters in the book:
 6. **Loops - Do-while** - In some situations you may the do while construct useful to ensure that the code block is exectuted at least once. In this construct, the condition is placed at the bottom of the block.
 7. **Break and Continue** - Often times, it is handy to be able to have tighter control within looping statements to allow us to skip the rest of the code or exit from within the block. `break` exits immediately from the innermost enclosing loop. `continue` on the otherhand causes the next iteration of the enclosing for, while or do loop.
 8. **Goto and Lables** - The goto statement is not particularly advisable to be used because it is never necessay. However, if anything, they can be helpful to break out of nested loops. we use a goto statement by specifying 
-```
+```c
 if (condition)
     goto <label>;
     ...
@@ -118,7 +118,7 @@ The fundamental advantage of using pointer to arrays is that it allows rows to b
 ## Chapter 6 (Structures)
 > Summary: A structure is a collection of variables and is useful when we want to create user defined objects that group together data that is similar or related.
 1. **Basic structure syntax** - A structure declaration takes the form of the structure name as well as it's members.
-```
+```c
 struct point {
     int x;
     int y;
@@ -159,7 +159,7 @@ Here we have defined a variable called flag that contains three 1-bit fields. Th
 1. **Standard input and output**: The C standard library implements a model to deal with I/O in the form of a text stream which are lines of text separated by a newline character. If the system doesn't work this way, the library makes it appear as though it does. Most systems use use indirection operators `< >` and piping `|`. It is important to understand the nuance of these two system functions. The <> in `#define <stdlib.h>` tells UNIX systems to look into /usr/include to find these header files.
 2. **Formatted Output - Printf**: printf is a library function that formats input based on your specification and passes it to standard output. There is a plethora of formatting functionality built into print. It can be found on (pg 154). Most useful to know is that a minus sign `%-` means left adjustment. A number `%5` determines the minimum field width of the output (used mostly for padding). A period separates the width from the precision of the output `%.3`. 
 3. **Variable-Length Argument Lists**: elipses used in function declaration indicate that the function can take a variable number of arguments. e.g. `int myfunc(int, ...)`. In order to access the variable list, the C standard library provides the type va_list in <stdarg.h>. [Exercise: minprintf]
-```
+```c
 #include <stdarg.h>
 
 int myfunc(int x, ...)
@@ -181,7 +181,7 @@ int myfunc(int x, ...)
 > Summary : In order to allow our programs to gain access to the O.S services, the Unix operating system provides a set of system functions(system calls) which can be used by user programs to gain access to system resources.
 1. **File descriptors** - In Unix, everything is represented as a file. The reason for this is that it establishes a uniform way of interacting with the various resources in a machine. Generally when performing a read/write operation to a file, the file must first must be open. The O.S, is responsible for providing the file descriptor (After checking permissions, etc.) which is the entry point to manipulate the file. The file descriptor is a small non-negative integer and is analogour to the file pointer described in the standard library. We learnt that stdin, stdout and stderr are in fact the file decriptors {0,1,2} opened by the O.S. whenever a program is run. All information about the opened file is maintained by the system. The user program only interacts with the file descriptor. _(Read additional notes "Unix File descriptors vs Standard lib File pointers")_
 2. **Low Level I/O - Read and Write** - System calls are in effect the entry point in which user programs can use the hardware of the device. Thus far we have been using standard library I/O functions such as `getchar` and `putchar` but these functions are built using system calls. I.e. getchar(), is just pre-defined the read operation on the file descriptor 0 (which corresponds to stdin, by default the keyboard) with a size of 1 byte (because a char is 1 byte). However, do take note that there are other implementations of getchar that instead take more input but buffers them and hands out the char input one at a time. _(Read additional notes "What is a stream & buffer?")_ 
-```
+```c
 #include "syscalls.h"
 
 int read(int fd, char *buf, int n)
@@ -255,7 +255,7 @@ So we see that libraries are just an interface for easier programming for intera
 
 **Pitfalls of Macro Substitution**
 - Some common mistakes that you can make with macro substitution can be quite hard to spot. in particular, it may be good advice to double check the arguements that are being expanded. For e.g.
-```
+```c
 #define max(A,B) ((A) > (B) ? (A) : (B))
 
 int i = 1;
